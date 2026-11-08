@@ -1,0 +1,20 @@
+{
+  "name": "dsh-memory-trigger",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "记忆触发：用户引用过去对话时（关键词/指代/实体缺失），自动检索会话历史并注入带时间戳的回忆片段。",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./backfill": "./lib/backfill.mjs"
+  },
+  "scripts": {
+    "backfill": "node lib/backfill.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
