@@ -57,11 +57,18 @@ const message = createUserMessage({
 
 ## 安装
 
-插件已在 desktop profile 中：
+从 npm 安装（推荐）：
 
 ```bash
-cd ~/.dsh/profiles/desktop
-pnpm add file:./plugins/dsh-memory-trigger
+dsh plugin --profile <你的 profile> add dsh-memory-trigger
+# 然后把 "dsh-memory-trigger" 加进该 profile package.json 的 dsh.profile.bundles，并重启 DSH
+```
+
+从源码安装：
+
+```bash
+cd ~/.dsh/profiles/<你的 profile>
+pnpm add file:/path/to/dsh-memory-trigger
 # package.json 的 dsh.profile.bundles 里要有 "dsh-memory-trigger"
 ```
 
@@ -87,10 +94,10 @@ node plugins/dsh-memory-trigger/lib/backfill.mjs
 {"session":"…","seq":10650,"ts":1793706600000,"role":"assistant","text":"…"}
 ```
 
-## 配置（`cordis.patch.yml` 的 `memory-trigger` 条目）
+## 配置（`cordis.patch.yml` 的 `dsh-memory-trigger` 条目）
 
 ```yaml
-- id: memory-trigger
+- id: dsh-memory-trigger
   name: 'dsh-memory-trigger'
   config:
     enabled: true
@@ -104,10 +111,11 @@ node plugins/dsh-memory-trigger/lib/backfill.mjs
       - '(?:下午|晚上)?\\s*\\d{1,2}\\s*[点时]'
     entityTrigger: true
     includeToolResults: true
-    topK: 3          # 每条消息最多注入几条片段
-    maxChars: 1200   # 注入总字数上限
-    minScore: 1.2    # BM25 阈值，低于此不注入
-    scope: session   # session = 只搜当前会话；all = 搜全部历史
+    topK: 3             # 每条消息最多注入几条片段
+    maxChars: 1200      # 注入总字数上限
+    minScore: 1.2       # BM25 阈值，低于此不注入
+    scope: all          # all = 全部历史会话（默认）；session = 只搜当前会话
+    groupByProject: true  # 跨项目时按项目分组标注
     logTriggers: true
 ```
 
@@ -170,7 +178,16 @@ node plugins/dsh-memory-trigger/lib/selftest.mjs
 - 注入是"给模型看原文"，不保证它一定引用；提示语里已要求"不要笼统说记不清"
 - 会话日志格式（`session.v4`）随 DSH 升级可能变；若 `history.` 读不到，插件会 log warn 并退化为"只捕获实时消息"
 - 注入片段占上下文预算，默认上限 1200 字；长会话可适当调小 `topK`
-- 目前只索引 `user/message` 与 `assistant/message`，tool 结果不进索引（降噪）
+- 跨会话检索（`scope: all`）默认开启：结果可能来自别的项目，注入时会按项目分组标注；只想看当前会话就设 `scope: session`
+
+## 日志
+
+`trigger.log.jsonl` 同时记录命中和**未命中**（`hit: 0, miss: true`），可用来调词典和阈值：
+
+```json
+{"at":"2026-11-08T06:30:00Z","kind":"keyword","trigger":"我说过","query":"…","hits":3}
+{"at":"2026-11-08T06:31:00Z","kind":"anaphora","trigger":"那个","query":"…","hits":0,"miss":true}
+```
 
 ## 开发注意（血泪教训）
 
@@ -184,6 +201,6 @@ node plugins/dsh-memory-trigger/lib/selftest.mjs
 
 ## 后续可做
 
-- 时间词过滤（"上个月""上周" → 限定检索范围）
-- 跨会话检索默认开启 + 按项目分组
-- 把"未命中"也记日志，方便调词典
+- 语义召回（embedding）作为 BM25 的补充
+- 词典热更新（改配置不用重启）
+- 未命中统计与自动调词（按 `trigger.log.jsonl` 分析）

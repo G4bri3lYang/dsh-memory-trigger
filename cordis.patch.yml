@@ -1,7 +1,7 @@
 # dsh-memory-trigger bundle patch
 #
-# 插入记忆触发插件：监听 agent/inbox/claimed 判定"用户在引用旧记忆"，
+# 插入记忆触发插件：监听 agent/inbox/claimed 判定「用户在引用旧记忆」，
 # 检索本地会话事件索引，并在 agent/pre-step 时把带时间戳的回忆片段注入本轮上下文。
 - insert:
-    - id: memory-trigger
+    - id: dsh-memory-trigger
       name: 'dsh-memory-trigger'

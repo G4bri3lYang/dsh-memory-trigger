@@ -1,16 +1,41 @@
 {
   "name": "dsh-memory-trigger",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.2.0",
+  "description": "DSH 记忆触发插件：上下文压缩后，用户引用旧记忆时自动检索会话历史并注入带时间戳的片段。",
+  "license": "MIT",
   "type": "module",
-  "description": "记忆触发：用户引用过去对话时（关键词/指代/实体缺失），自动检索会话历史并注入带时间戳的回忆片段。",
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
     "./backfill": "./lib/backfill.mjs"
   },
+  "files": [
+    "lib/index.js",
+    "lib/search.js",
+    "lib/backfill.mjs",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "plugin",
+    "memory",
+    "context",
+    "bm25",
+    "recall"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/G4bri3lYang/dsh-memory-trigger.git"
+  },
+  "engines": {
+    "node": ">=22.15"
+  },
   "scripts": {
-    "backfill": "node lib/backfill.mjs"
+    "backfill": "node lib/backfill.mjs",
+    "selftest": "node lib/selftest.mjs"
   },
   "dsh": {
     "bundle": {
