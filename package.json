@@ -1,6 +1,6 @@
 {
   "name": "dsh-memory-trigger",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "DSH 记忆触发插件：上下文压缩后，用户引用旧记忆时自动检索会话历史并注入带时间戳的片段。",
   "license": "MIT",
   "type": "module",

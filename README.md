@@ -110,6 +110,7 @@ node plugins/dsh-memory-trigger/lib/backfill.mjs
       - '星期[一二三四五六日天1-7]'
       - '(?:下午|晚上)?\\s*\\d{1,2}\\s*[点时]'
     entityTrigger: true
+    entityMinScore: 3    # 实体触发的 BM25 阈值（更严格）
     includeToolResults: true
     topK: 3             # 每条消息最多注入几条片段
     maxChars: 1200      # 注入总字数上限
